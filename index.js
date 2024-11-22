@@ -5,15 +5,13 @@ const { Client, GatewayIntentBits } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource } = require('@discordjs/voice');
 const ytdl = require("@distube/ytdl-core"); // 유튜브 재생관련 라이브러리
 
-console.log("토큰 : " , process.env.DISCORD_BOT_TOKEN)
-const TOKEN = process.env.DISCORD_BOT_TOKEN;
-
+// Discord API에 연결하고 이벤트 처리하기 위한 객체
 const client = new Client({
   intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildVoiceStates,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.Guilds, // 서버 관련
+    GatewayIntentBits.GuildVoiceStates, // 음성 채널 관련
+    GatewayIntentBits.GuildMessages, // 채팅 메시지 관련
+    GatewayIntentBits.MessageContent, // 채팅 메세지 읽는 권한
   ],
 });
 
@@ -22,16 +20,22 @@ let queue = []; // 플레이 리스트
 let musicTitle = []; // 플레이리스트에 추가되는 제목
 let currentPlayer = null; // 현재 재생중인 플레이어(곡)
 
+/**
+ * 실행 후 준비되었을 때
+ */
 client.once('ready', () => {
   console.log(`${client.user.tag}이 로그인했어요!`);
 });
 
+/**
+ * 디스코드 내에서 메세지를 입력했을 때
+ */
 client.on('messageCreate', async (message) => {
 
   if (message.author.bot) return;
 
   // 1. !재생 명령어 입력한 경우
-  if (message.content.startsWith('!재생 ')) {
+  if (message.content.startsWith('!재생 ') || message.content.startsWith('!play ')) {
       const url = message.content.split(' ')[1]; // 유튜브 URL 추출
 
     // 유튜브 URL 검증
@@ -48,6 +52,7 @@ client.on('messageCreate', async (message) => {
     }
 
     try {
+
       // 곡을 대기열에 추가
       queue.push(url);
       ytdl.getInfo(url).then(info => {
@@ -69,11 +74,11 @@ client.on('messageCreate', async (message) => {
   }
 
   // 2. !대기열 입력한 경우
-  if (message.content === '!대기열' || message.content === '!목록') {
-      console.log("musicTitle@@ : ", musicTitle)
+  if (message.content === '!대기열' || message.content === '!목록' || message.content === '!list') {
       if (queue.length === 1) {
       message.reply('현재 대기열에 곡이 없습니다.');
     } else {
+        // 플레이 리스트 창 인터페이스
         const embed = {
           color: 0x0099ff,  // Embed 색상
           title: '플레이 리스트',
@@ -126,4 +131,4 @@ async function playNext(voiceChannel) {
   currentPlayer = player;
 }
 
-client.login(TOKEN);
+client.login(process.env.DISCORD_BOT_TOKEN);
