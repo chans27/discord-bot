@@ -4,6 +4,7 @@
 const { queue, musicTitle } = require('./utils/musicUtils');
 
 async function checkPlaylist(message) {
+  console.log("현재 플레이리스트 : ", queue)
   if (queue.length === 0) {
     message.reply('현재 대기열에 곡이 없습니다.');
     return;
@@ -13,9 +14,9 @@ async function checkPlaylist(message) {
   const embed = {
     color: 0x0099ff,
     title: '플레이 리스트',
-    description: queue.length === 1 ?
-      `현재 대기 중인 곡: **${musicTitle[0]}**` :
-      `대기 중인 곡들:\n${musicTitle.slice(1).map((title, index) => `${index + 1}. ${title}`).join('\n')}`,
+    description: queue.length === 1 // 현재 재생중인 음악 하나만 있을 때
+      ? '현재 대기열에 곡이 없습니다.'
+      : `대기 중인 곡들:\n${musicTitle.slice(1).map((title, index) => `${index + 1}. ${title}`).join('\n')}`,
     timestamp: new Date(),
   };
 

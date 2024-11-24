@@ -36,7 +36,7 @@ async function playMusic(message) {
       message.reply(`곡이 대기열에 추가되었습니다: ${url}`);
     }
   } catch (error) {
-    console.error('에러 발생 :', error);
+    console.error('음악 재생 에러 발생 :', error);
     message.reply('음악 재생 시도중에 에러가 발생했어요.');
   }
 }
@@ -72,4 +72,4 @@ async function playNext(voiceChannel) {
   });
 }
 
-module.exports = { playMusic };
+module.exports = { playMusic , playNext };

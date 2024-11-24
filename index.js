@@ -2,9 +2,11 @@ require('dotenv').config(); // .env 파일 불러오기
 global.ReadableStream = require('web-streams-polyfill').ReadableStream;
 
 const { Client, GatewayIntentBits } = require('discord.js');
-const ytdl = require("@distube/ytdl-core");
+const ytdl = require("@distube/ytdl-core"); // 유튜브 재생관련 라이브러리
 const { playMusic } = require('./src/play');
-const { checkPlaylist } = require('./src/playlist'); // 유튜브 재생관련 라이브러리
+const { checkPlaylist } = require('./src/playlist');
+const { skipMusic} = require('./src/skipMusic')
+
 
 // Discord API에 연결하고 이벤트 처리하기 위한 객체
 const client = new Client({
@@ -15,10 +17,6 @@ const client = new Client({
     GatewayIntentBits.MessageContent, // 채팅 메세지 읽는 권한
   ],
 });
-
-// 재생 대기열 관리
-
-let currentPlayer = null; // 현재 재생중인 플레이어(곡)
 
 /**
  * 실행 후 준비되었을 때
@@ -38,6 +36,8 @@ client.on('messageCreate', async (message) => {
       await playMusic(message);
   } else if (message.content === '!대기열' || message.content === '!목록' || message.content === '!list') {
     await checkPlaylist(message);
+  } else if (message.content === '!다음' || message.content === '!next' || message.content === '!skip') {
+    await skipMusic(message);
   }
 
 });
