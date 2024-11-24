@@ -33,7 +33,13 @@ async function playMusic(message) {
 
     if (queue.length === 1) {
       await playNext(voiceChannel);
-      message.reply(`곡이 대기열에 추가되었습니다: ${url}`);
+      message.reply(`곡이 대기열에 추가되었습니다: ${url}`)
+        .then(sentMessage => {
+          setTimeout(() => {
+            sentMessage.delete().catch(console.error);
+          }, 1000)
+        })
+        .catch(console.error);
     }
   } catch (error) {
     console.error('음악 재생 에러 발생 :', error);
